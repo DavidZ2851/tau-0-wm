@@ -236,15 +236,6 @@ def quaternion_to_rotation_6d(quat: torch.Tensor, quat_order: str = "xyzw") -> t
 
 @staticmethod
 def _unwrap_angles_delta(delta: torch.Tensor) -> torch.Tensor:
-    """
-    修正角度差值，使其在 [-pi, pi) 范围内。
-    例如，如果 delta = 358度 (6.25 rad)，修正为 -2度 (-0.035 rad)。
-
-    适用于弧度制 (Radians)。
-    """
-    # (delta + pi) % (2*pi) - pi
-    # torch.remainder 对应数学中的 %
-    # 确保 delta 在 [-pi, pi] 范围内
     return torch.remainder(delta + torch.pi, 2 * torch.pi) - torch.pi
     
 
@@ -350,7 +341,6 @@ def rela_eef_to_abs(action, state):
         )
 
         # Rotation inverse:
-        # delta_rpy 对应的是 R_delta
         # R_delta = R_ref^T @ R_abs
         # => R_abs = R_ref @ R_delta
         R_left_delta = euler_xyz_to_matrix(action[:, left_rpy])      # (T, 3, 3)
@@ -362,7 +352,6 @@ def rela_eef_to_abs(action, state):
         abs_action[:, left_rpy] = matrix_to_euler_xyz(R_left_abs)
         abs_action[:, right_rpy] = matrix_to_euler_xyz(R_right_abs)
 
-        # 如果你希望输出角度始终限制在主值区间，可以打开这两行
         abs_action[:, left_rpy] = _unwrap_angles_delta(abs_action[:, left_rpy])
         abs_action[:, right_rpy] = _unwrap_angles_delta(abs_action[:, right_rpy])
 
@@ -372,7 +361,6 @@ def rela_eef_to_abs(action, state):
 def abs_eef_to_rela(action, state):
     if not isinstance(action, torch.Tensor):
         action = torch.from_numpy(action)
-    # 确保 reference_state 也是 Tensor 且形状正确 [D]
     if not isinstance(state, torch.Tensor):
         state = torch.from_numpy(state)
     T, D = action.shape
