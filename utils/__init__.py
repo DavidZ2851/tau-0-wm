@@ -23,7 +23,6 @@ class Tee:
         for f in self.files:
             f.flush()
     def isatty(self):
-        # 让 transformers 认为“不是 TTY”，就不会开彩色输出
         return False
 
 def init_logging(log_dir, rank):
