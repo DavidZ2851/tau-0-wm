@@ -8,7 +8,7 @@ import traceback
 from web_infer_utils.openpi_client import msgpack_numpy
 import websockets.asyncio.server as _server
 import websockets.frames
-from web_infer_utils.WanPolicy import WanPolicy
+from web_infer_utils.TauPolicy import TauPolicy
 import numpy as np
 import cv2
 import json
@@ -72,57 +72,6 @@ VIEW_KEYS = [
     "observation.images.hand_left",
     "observation.images.hand_right",
 ]
-def build_hil_serl_obs(results: dict, image_size=(192, 256)) -> dict:
-    """
-    Resize the three observation image views and stack them into an obs tensor
-    with shape [V, C, H, W].
-
-    Args:
-        results: dict containing the three image views and other fields.
-        image_size: target image size as (H, W), default (192, 256).
-
-    Returns:
-        A new dict with all original fields preserved, plus:
-            results["obs"]: np.ndarray of shape [3, 3, H, W]
-    """
-    target_h, target_w = image_size
-
-    resized_views = []
-    for key in VIEW_KEYS:
-        if key not in results:
-            raise KeyError(f"Missing key in results: {key}")
-
-        img = results[key]
-        if not isinstance(img, np.ndarray):
-            raise TypeError(f"{key} must be a numpy array, but got {type(img)}")
-
-        if img.ndim != 3 or img.shape[2] != 3:
-            raise ValueError(
-                f"{key} must have shape [H, W, 3], but got {img.shape}"
-            )
-
-        # cv2.resize uses (width, height)
-        img_resized = cv2.resize(img, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
-
-        # HWC -> CHW
-        img_chw = np.transpose(img_resized, (2, 0, 1)).astype(np.float32)
-
-        resized_views.append(img_chw)
-
-    # [V, C, H, W]
-    obs = np.stack(resized_views, axis=0) * 2 - 1
-
-    new_results = {}
-    new_results["obs"] = obs
-    new_results["prompt"] = results["prompt"]
-    new_results["arm_joint_states"] = results["observation.state"][:14]
-    new_results["gripper_states"] = results["observation.state"][14:16]
-
-
-    # TODO: hard code here
-    new_results["shift"] = 1.0
-    new_results["sample_solver"] = "euler"
-    return new_results
 
 
 def get_mock_output(obs):
@@ -130,7 +79,7 @@ def get_mock_output(obs):
     gripper_state = obs['gripper_states'] / 120
     return np.concatenate((arm_joint_state,gripper_state),axis=-1)[None,:].repeat(33,axis=0)
 
-class WanPolicyServer(WanPolicy):
+class TauPolicyServer(TauPolicy):
     
     def __init__(self, host, port, metadata=None, **kwargs):
         super().__init__(**kwargs)
@@ -281,11 +230,6 @@ def get_args():
         action='store_true',
         help='Disable action-branch 1D RoPE precompute path.',
     )
-    parser.add_argument(
-        '--use-hil-serl',
-        action='store_true',
-        help='Using hil serl to run inference.',
-    )
 
     args = parser.parse_args()
 
@@ -298,7 +242,7 @@ if __name__ == "__main__":
     
     device, is_distributed, rank, local_rank, world_size = init_distributed_and_get_device()
     
-    actor = WanPolicyServer(
+    actor = TauPolicyServer(
         args.host, args.port, policy_metadata,
         config_file=args.config,
         device=device,
