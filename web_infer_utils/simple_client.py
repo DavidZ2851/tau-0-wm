@@ -34,7 +34,7 @@ def main(args: Args) -> None:
     
     print("A mock payload is provide for example")
     payload = {
-        "obs": np.random.rand(3, 3, 192, 256),    # range -1 to 1
+        "obs": np.random.rand(3, 3, 192, 256),    # range -1 to 1, {v,c,h,w}
         "prompt": "task or step caption",
         "state": np.random.rand(14),
         "gripper_states": np.random.rand(2)*120,
