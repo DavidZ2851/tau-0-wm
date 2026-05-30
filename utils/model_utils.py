@@ -106,7 +106,7 @@ def load_condition_models(
     text_encoder_dtype: torch.dtype = torch.bfloat16,
     revision: Optional[str] = None,
     cache_dir: Optional[str] = None,
-    load_weights: bool = True,  # 添加一个参数控制是否加载权重
+    load_weights: bool = True,
     **kwargs,
 ) -> Dict[str, nn.Module]:
     tokenizer = tokenizer_class.from_pretrained(
@@ -132,7 +132,7 @@ def load_condition_models(
             revision=revision,
             cache_dir=cache_dir
         )
-        text_encoder = textenc_class(config)  # 仅初始化模型，不加载权重
+        text_encoder = textenc_class(config)
 
     return {"tokenizer": tokenizer, "text_encoder": text_encoder}
 
