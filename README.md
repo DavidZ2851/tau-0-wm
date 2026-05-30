@@ -5,7 +5,7 @@
 ![Overview](figures/VAM-teaser-img.jpg)
 
 
-This repo is the official implementation of **$\tau_0$-World Model: A Unified Video-Action World Model forRobotic Manipulation**.
+This repo is the official implementation of **$\tau_0$-World Model: A Unified Video-Action World Model for Robotic Manipulation**.
 
 
 ## News
@@ -15,7 +15,7 @@ This repo is the official implementation of **$\tau_0$-World Model: A Unified Vi
 
 ## Pretrained Model
 
-* The pretrained weights of VAM can be found on [hiuggingface]([https://huggingface.co/](https://huggingface.co/sii-research/tau-0-wm)).
+* The pretrained weights of VAM can be found on [huggingface]([https://huggingface.co/](https://huggingface.co/sii-research/tau-0-wm)).
 
 * The pretrained weights of Simulator will be released soon.
 
@@ -42,7 +42,7 @@ pip install -r requirements.txt
 
 4. Replace `vae_path` in the config with your local path to VAE's weight.
 
-5. Replace `text_encoder.checkpoint_path` and `text_encoder.tokenizer_path` in the config with your local path to text encoder and tokernizer.
+5. Replace `text_encoder.checkpoint_path` and `text_encoder.tokenizer_path` in the config with your local path to text encoder and tokenizer.
 
 
 ### Action Space
@@ -69,17 +69,18 @@ We provide a simple script of deploying $\tau_0$-WM server:
 
 ```
 # Policy Server
-bash web_infer_scripts/run_server.sh $HOST $PORT
-```
+bash run_infer_server.sh $HOST $PORT
 
-```
 # A simple client that send random observations
 python web_infer_utils/simple_client.py
 ```
-
-
 
 ## Acknowledgment
 - The video model of $\tau_0$-WM is built on [Wan-2.2](https://github.com/Wan-Video/Wan2.2).
 - Some codes in this repo are modified from [GE-Act](https://github.com/AgibotTech/Genie-Envisioner.git).
 - The web-socket based policy server is built on [openpi](https://github.com/Physical-Intelligence/openpi).
+
+
+### License
+Data and codes within this repo are under Apache License 2.0.[https://github.com/huggingface/diffusers/blob/main/LICENSE].
+
