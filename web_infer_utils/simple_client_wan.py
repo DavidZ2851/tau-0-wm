@@ -38,10 +38,8 @@ def main(args: Args) -> None:
         "observation.left_hand": np.random.rand(3, 192, 256),    # range -1 to 1
         "observation.right_hand": np.random.rand(3, 192, 256),    # range -1 to 1
         "prompt": "task or step caption",
-        "arm_joint_states": np.random.rand(14),
-        "gripper_states": np.random.rand(2),
-        "waist_joint_states": np.random.rand(2),
-        "head_joint_states": np.random.rand(2),
+        "state": np.random.rand(14),
+        "gripper_states": np.random.rand(2)*120,
         "num_inference_steps": 5,
         "execution_step": 30,
         "sample_solver": "euler",
