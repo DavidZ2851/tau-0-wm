@@ -130,7 +130,6 @@ def get_mock_output(obs):
     gripper_state = obs['gripper_states'] / 120
     return np.concatenate((arm_joint_state,gripper_state),axis=-1)[None,:].repeat(33,axis=0)
 
-Solver = A2dJoint2EefIK()
 class WanPolicyServer(WanPolicy):
     
     def __init__(self, host, port, metadata=None, **kwargs):
@@ -171,22 +170,7 @@ class WanPolicyServer(WanPolicy):
 
                 infer_time = time.monotonic()
 
-                waist_joint_states = torch.tensor(obs['waist_joint_states']).unsqueeze(0)
-                head_joint_states = torch.tensor(obs['head_joint_states']).unsqueeze(0)
-                
-                state = torch.from_numpy(
-                    Solver.get_eef_pos(
-                        waist_joint_states[0,0], waist_joint_states[0,1],
-                        torch.tensor(obs['arm_joint_states'])[:7],
-                        torch.tensor(obs['arm_joint_states'])[7:],
-                        head_joint_states[0], mode="quat"
-                    )
-                ).data.numpy()
-                obs['state'] = state
-
                 action = self.play(**obs)
-
-                action = _eef2joint_ik(action, obs['arm_joint_states'], obs['head_joint_states'])
 
                 action = dict(actions=action,)
     
