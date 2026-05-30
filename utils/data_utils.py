@@ -11,7 +11,6 @@ from einops import rearrange
 
 import torchvision
 import torchvision.transforms as transforms
-# import kornia.augmentation as K
 
 
 def _encode_prompt(
@@ -233,8 +232,6 @@ def decode_latents(vae, latents, decode_timestep=0.0, decode_noise_scale=None, d
 
 
 
-
-
 def prepare_latents(
     vae,
     image_or_video: torch.Tensor,
@@ -423,105 +420,3 @@ def apply_color_jitter_to_video(tensor, jitter=None):
     tensor = tensor * 2.0 - 1.0
     return tensor
 
-
-def apply_color_jitter_kornia(tensor, brightness=0.3, contrast=0.4, saturation=0.5, hue=0.1, same_jitter_per_video=True):
-    """
-    对形状为 (B, C, T, H, W)，值在 [-1, 1] 之间的 Tensor 应用 ColorJitter 增强（GPU 加速版）
-
-    参数:
-        tensor: (B, C, T, H, W) in [-1, 1], on GPU
-        same_jitter_per_video: bool, 是否对每个视频内所有帧应用相同的 jitter（通常设为 True）
-
-    返回:
-        (B, C, T, H, W), still in [-1, 1]
-    """
-    B, C, T, H, W = tensor.shape
-    assert C == 3
-    raw_dtype = tensor.dtype
-    # [-1, 1] → [0, 1]
-    tensor = (tensor + 1.0) / 2.0
-    tensor = tensor.to(dtype=torch.float32)
-    # reshape to [B*T, C, H, W] or [B, T, C, H, W]
-    if same_jitter_per_video:
-        # reshape to B, T, C, H, W
-        tensor_btchw = rearrange(tensor, 'b c t h w -> b t c h w')
-        # 合并 batch 维度，变成 [B, T, C, H, W]
-        aug = K.ColorJitter(brightness=brightness, contrast=contrast,
-                            saturation=saturation, hue=hue, p=1.0, same_on_batch=False)
-        # Kornia 支持对 T 帧做相同的 jitter
-        tensor_btchw = aug(tensor_btchw)
-        tensor = rearrange(tensor_btchw, 'b t c h w -> b c t h w')
-    else:
-        # 每帧都不同 jitter（较少见）
-        tensor = rearrange(tensor, 'b c t h w -> (b t) c h w')
-        aug = K.ColorJitter(brightness=brightness, contrast=contrast,
-                            saturation=saturation, hue=hue, p=1.0, same_on_batch=False)
-        tensor = aug(tensor)
-        tensor = rearrange(tensor, '(b t) c h w -> b c t h w', b=B, t=T)
-
-    # 映射回 [-1, 1]
-    tensor = tensor * 2.0 - 1.0
-    return tensor.to(dtype=raw_dtype)
-
-
-@torch.no_grad()
-def prepare_ray_map(intrinsic, c2w, H, W):
-    ###
-    ### intrinsic: b, 3, 3
-    ### c2w:       b, 4, 4
-    ### rays:      b, H, W, 3 and b, H, W, 3
-    ### 
-    batch_size = intrinsic.shape[0]
-    fx, fy, cx, cy = intrinsic[:,0,0].unsqueeze(1).unsqueeze(2), intrinsic[:,1,1].unsqueeze(1).unsqueeze(2), intrinsic[:,0,2].unsqueeze(1).unsqueeze(2), intrinsic[:,1,2].unsqueeze(1).unsqueeze(2)
-    i, j = torch.meshgrid(torch.linspace(0.5, W-0.5, W, device=c2w.device), torch.linspace(0.5, H-0.5, H, device=c2w.device))  # pytorch's meshgrid has indexing='ij'
-    i = i.t()
-    j = j.t()
-    i = i.unsqueeze(0).repeat(batch_size,1,1)
-    j = j.unsqueeze(0).repeat(batch_size,1,1)
-    dirs = torch.stack([(i-cx)/fx, (j-cy)/fy, torch.ones_like(i)], -1)
-    rays_d = torch.sum(dirs[..., np.newaxis, :] * c2w[:,np.newaxis,np.newaxis, :3,:3], -1)
-    rays_o = c2w[:, :3,-1].unsqueeze(1).unsqueeze(2).repeat(1,H,W,1)
-    viewdir = rays_d/torch.norm(rays_d, dim=-1, keepdim=True)
-    return rays_o, viewdir
-
-
-@torch.no_grad()
-def get_ray_maps(intrinsic, extrinsic, h, w, n_view, t, device, dtype):
-    """
-    inputs:
-        intrinsic: {b,v,t,3,3}
-        extrinsic: {b,v,t,4,4}
-    output:
-        rays:      {b,c,v,t,h,w}
-    """
-    intrinsics = rearrange(intrinsic, "b v t i j -> (b v t) i j")
-    extrinsics = rearrange(extrinsic, "b v t i j -> (b v t) i j")
-    rays_o, rays_d = prepare_ray_map(intrinsics, extrinsics, H=h, W=w)
-    ### (b v t) h w c -> b c v t h w
-    rays = rearrange(torch.cat((rays_o, rays_d), dim=-1), "(b v t) h w c -> b c v t h w", v=n_view, t=t)
-    rays = rays.to(device, dtype=dtype).contiguous()
-    return rays
-
-
-
-def resize_traj_and_ray(traj_n_ray, mem_size, future_size, height, width):
-    '''
-    traj_n_ray: b c v t h w
-    '''
-    orig_t = traj_n_ray.shape[3]
-    assert orig_t > (mem_size + future_size)
-
-    n_view = traj_n_ray.shape[2]
-    traj_n_ray = rearrange(traj_n_ray, 'b c v t h w -> (b v) c t h w')
-
-    mem = traj_n_ray[:, :, :mem_size]
-    mem = rearrange(mem, 'bv c t h w -> (bv t) c h w')
-    mem = F.interpolate(mem, (height, width), mode='bilinear')
-    mem = rearrange(mem, '(bv t) c h w -> bv c t h w', t=mem_size)
-
-    future = traj_n_ray[:, :, mem_size:]  # bv c t h w
-    future = F.interpolate(future, (future_size, height, width), mode='trilinear')
-
-    out = torch.cat([mem, future], dim=2)
-    out = rearrange(out, '(b v) c t h w -> b c v t h w', v=n_view)
-    return out
