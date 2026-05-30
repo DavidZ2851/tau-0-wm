@@ -2,7 +2,7 @@
 # $\tau_0$-World Model
 
 
-![Overview](figures/VAM-teaser.pdf)
+![Overview](figures/VAM-teaser-img.jpg)
 
 
 This repo is the official implementation of **$\tau_0$-World Model: A Unified Video-Action World Model forRobotic Manipulation**.
