@@ -34,9 +34,7 @@ def main(args: Args) -> None:
     
     print("A mock payload is provide for example")
     payload = {
-        "observation.head": np.random.rand(3, 192, 256),    # range -1 to 1
-        "observation.left_hand": np.random.rand(3, 192, 256),    # range -1 to 1
-        "observation.right_hand": np.random.rand(3, 192, 256),    # range -1 to 1
+        "obs": np.random.rand(3, 3, 192, 256),    # range -1 to 1
         "prompt": "task or step caption",
         "state": np.random.rand(14),
         "gripper_states": np.random.rand(2)*120,
@@ -48,7 +46,8 @@ def main(args: Args) -> None:
     print(payload)
     
     action = policy.infer(obs=payload)['actions']
-        
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     main(tyro.cli(Args))
