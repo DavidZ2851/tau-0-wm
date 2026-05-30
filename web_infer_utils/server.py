@@ -238,7 +238,7 @@ def get_args():
 
 if __name__ == "__main__":
     args = get_args()
-    policy_metadata = dict(test_meta="Wan Policy Meta Data")
+    policy_metadata = dict(test_meta="Tau Policy Meta Data")
     
     device, is_distributed, rank, local_rank, world_size = init_distributed_and_get_device()
     
