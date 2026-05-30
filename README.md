@@ -73,7 +73,6 @@ python web_infer_utils/simple_client_wan.py
 
 
 ## Acknowledgment
-
 - The video model of $\tau_0$-WM is built on [Wan-2.2](https://github.com/Wan-Video/Wan2.2).
+- Some codes in this repo are modified from [GE-Act](https://github.com/AgibotTech/Genie-Envisioner.git).
 - The web-socket based policy server is built on [openpi](https://github.com/Physical-Intelligence/openpi).
-
