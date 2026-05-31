@@ -9,7 +9,6 @@ This repo is the official implementation of **$\tau_0$-World Model: A Unified Vi
 
 
 ## News
-
 - [2026.06.01] 🚀 We release $\tau_0$-World Model [paper](https://finch-static.agibot.com/VAM/blog/tau_0_wm.pdf) [project homepage](https://finch.agibot.com/research/tau0-wm) [huggingface](https://huggingface.co/sii-research/tau-0-wm).
 
 
