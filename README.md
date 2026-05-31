@@ -5,7 +5,7 @@
 
 ![Overview](figures/VAM-teaser-img.jpg)
 
-</a> &nbsp; <a href='https://finch.agibot.com/research/tau0-wm'><img src='https://img.shields.io/badge/Site-Tau_0_WM-blue'> </a> &nbsp;</a> &nbsp; <a href='https://finch-static.agibot.com/VAM/blog/tau_0_wm.pdf'><img src='https://img.shields.io/badge/Paper-Tau_0_WM-red'></a> &nbsp; </a> &nbsp; <a href='https://huggingface.co/sii-research/tau-0-wm'><img src='https://img.shields.io/badge/Weight-huggingface-orange'></a> &nbsp;
+</a> &nbsp; <a href='https://finch.agibot.com/research/tau0-wm'><img src='https://img.shields.io/badge/Project_Website-tau_0_WM-blue' height="25"> </a> &nbsp;</a> &nbsp; <a href='https://finch-static.agibot.com/VAM/blog/tau_0_wm.pdf'><img src='https://img.shields.io/badge/Paper-tau_0_WM-red' height="25"></a> &nbsp; </a> &nbsp; <a href='https://huggingface.co/sii-research/tau-0-wm'><img src='https://img.shields.io/badge/Weight-huggingface-orange' height="25"></a> &nbsp;
 
 </div>
 
@@ -13,7 +13,7 @@ This repo is the official implementation of **$\tau_0$-World Model: A Unified Vi
 
 
 ## News
-- [2026.06.01] 🚀 We release $\tau_0$-World Model [Paper](https://finch-static.agibot.com/VAM/blog/tau_0_wm.pdf), [Homepage](https://finch.agibot.com/research/tau0-wm), [Huggingface](https://huggingface.co/sii-research/tau-0-wm).
+- [2026.06.01] 🚀 We release $\tau_0$-World Model [Paper](https://finch-static.agibot.com/VAM/blog/tau_0_wm.pdf), [Project Website](https://finch.agibot.com/research/tau0-wm), [Huggingface](https://huggingface.co/sii-research/tau-0-wm).
 
 
 ## Pretrained Model
