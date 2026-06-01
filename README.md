@@ -86,5 +86,5 @@ python web_infer_utils/simple_client.py
 
 
 ### License
-Data and codes within this repo are under (Apache License 2.0)[https://github.com/huggingface/diffusers/blob/main/LICENSE].
+Data and codes within this repo are under [Apache License 2.0](https://github.com/huggingface/diffusers/blob/main/LICENSE).
 
