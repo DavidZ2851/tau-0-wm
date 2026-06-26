@@ -82,7 +82,7 @@ nvidia-nvtx-cu12==12.8.90
 opencv-python==4.13.0.92
 opencv-python-headless==4.13.0.92
 orderly-set==5.5.0
-packaging==26.0
+packaging==25.0
 pandas==3.0.3
 pillow==12.1.1
 platformdirs==4.9.6
@@ -108,7 +108,7 @@ rich==14.1.0
 safetensors==0.7.0
 scipy==1.17.1
 sentry-sdk==2.60.0
-setuptools==82.0.1
+setuptools==80.9.0
 shellingham==1.5.4
 six==1.17.0
 smmap==5.0.3
@@ -118,13 +118,9 @@ sympy==1.14.0
 termcolor==3.3.0
 tokenizers==0.22.2
 toml==0.10.2
-torch==2.8.0+cu128
-torchaudio==2.8.0+cu128
-torchcodec==0.10.0
-torchvision==0.23.0+cu128
 tqdm==4.67.3
 transformers==5.0.0rc1
-triton==3.4.0
+triton==3.5.0
 typeguard==4.5.1
 typer==0.24.1
 typer-slim==0.24.0
